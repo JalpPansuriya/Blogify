@@ -1,0 +1,73 @@
+<!-- Sidebar Navigation -->
+<aside class="sidebar">
+  <!-- Logo -->
+  <a href="/" class="sidebar-logo">
+    <span>B</span>
+  </a>
+  <span class="sidebar-brand">Blogify</span>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <a href="/" class="nav-item active">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+          <polyline points="9,22 9,12 15,12 15,22"></polyline>
+        </svg>
+      </span>
+      <span class="nav-label">Home</span>
+    </a>
+
+    <% if (locals.user) { %>
+      <a href="/blog/add-new" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+        </span>
+        <span class="nav-label">New Blog</span>
+      </a>
+      <% } %>
+  </nav>
+
+  <!-- User Section -->
+  <div class="sidebar-user">
+    <% if (locals.user) { %>
+      <div class="tooltip-container">
+        <a href="/user/logout" class="user-avatar" title="Logout">
+          <% if (user.profileImageURL && !user.profileImageURL.includes('download.png')) { %>
+            <img src="<%= user.profileImageURL %>" alt="<%= user.fullName %>" />
+            <% } else { %>
+              <%= user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U' %>
+                <% } %>
+        </a>
+        <span class="tooltip" style="bottom: 50%; left: 120%; transform: translateY(50%);">Logout</span>
+      </div>
+      <% } else { %>
+        <a href="/user/signin" class="nav-item">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"></path>
+              <polyline points="10,17 15,12 10,7"></polyline>
+              <line x1="15" y1="12" x2="3" y2="12"></line>
+            </svg>
+          </span>
+          <span class="nav-label">Sign In</span>
+        </a>
+        <% } %>
+  </div>
+</aside>
+
+<!-- Error Alert -->
+<% if (locals.error) { %>
+  <div class="main-content" style="margin-bottom: 0; padding-bottom: 0;">
+    <div class="alert alert-error">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <%= locals.error %>
+    </div>
+  </div>
+  <% } %>

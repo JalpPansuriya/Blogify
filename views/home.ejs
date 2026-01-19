@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include("./partials/head") %>
+    <title>Blogify - Share Your Stories</title>
+</head>
+
+<body>
+  <div class="app-container">
+    <%- include("./partials/nav") %>
+
+      <main class="main-content">
+        <!-- Search Section -->
+        <div class="search-container">
+          <h1 class="search-title">Search my mind...</h1>
+          <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="M21 21l-4.35-4.35"></path>
+            </svg>
+            <input type="text" class="search-input" placeholder="Search blogs, ideas, stories..." id="searchInput" />
+          </div>
+        </div>
+
+        <!-- Masonry Grid -->
+        <div class="masonry-grid" id="blogGrid">
+
+          <% if (locals.user) { %>
+            <!-- Add New Note Card -->
+            <a href="/blog/add-new" class="add-note-card">
+              <div class="add-note-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="display: inline; vertical-align: middle; margin-right: 4px;">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Add a new story
+              </div>
+              <div class="add-note-text">Start typing here...</div>
+            </a>
+            <% } %>
+
+              <% if (blogs && blogs.length> 0) { %>
+                <% blogs.forEach((blog, index)=> { %>
+                  <!-- Blog Card -->
+                  <article class="blog-card stagger-<%= (index % 8) + 1 %>">
+                    <a href="/blog/<%= blog._id %>" class="blog-card-link" aria-label="Read <%= blog.title %>"></a>
+
+                    <% if (blog.coverImageURL) { %>
+                      <div class="blog-card-image">
+                        <img src="<%= blog.coverImageURL %>" alt="<%= blog.title %>" loading="lazy" />
+                        <div class="blog-card-overlay"></div>
+                      </div>
+                      <% } %>
+
+                        <div class="blog-card-content">
+                          <h2 class="blog-card-title">
+                            <%= blog.title %>
+                          </h2>
+                          <div class="blog-card-meta">
+                            <% if (blog.createdBy && blog.createdBy.profileImageURL) { %>
+                              <img src="<%= blog.createdBy.profileImageURL %>" alt="" class="blog-card-author-img" />
+                              <% } %>
+                                <span>
+                                  <%= blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short' , day: 'numeric' }) : '' %>
+                                </span>
+                          </div>
+                        </div>
+
+                        <span class="blog-card-action">Read →</span>
+                  </article>
+                  <% }) %>
+                    <% } else { %>
+                      <!-- Empty State -->
+                      <div class="empty-state" style="grid-column: 1 / -1; column-span: all;">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="1.5">
+                          <path
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                          </path>
+                        </svg>
+                        <h3 class="empty-state-title">No stories yet</h3>
+                        <p class="empty-state-text">Be the first to share something amazing!</p>
+                        <% if (locals.user) { %>
+                          <a href="/blog/add-new" class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2">
+                              <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                            Write your first blog
+                          </a>
+                          <% } else { %>
+                            <a href="/user/signin" class="btn btn-primary">Sign in to write</a>
+                            <% } %>
+                      </div>
+                      <% } %>
+        </div>
+      </main>
+  </div>
+
+  <%- include("./partials/scripts") %>
+
+    <!-- Search Filter Script -->
+    <script>
+      document.getElementById('searchInput').addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.blog-card');
+
+        cards.forEach(card => {
+          const title = card.querySelector('.blog-card-title');
+          if (title) {
+            const text = title.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+              card.style.display = '';
+              card.style.animation = 'fadeIn 0.3s ease-out forwards';
+            } else {
+              card.style.display = 'none';
+            }
+          }
+        });
+      });
+    </script>
+</body>
+
+</html>

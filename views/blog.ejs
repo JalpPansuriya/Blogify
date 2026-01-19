@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include("./partials/head") %>
+    <title>
+      <%= blog.title %> - Blogify
+    </title>
+</head>
+
+<body>
+  <div class="app-container">
+    <%- include("./partials/nav") %>
+
+      <main class="main-content">
+        <article class="blog-page">
+          <!-- Blog Header -->
+          <header class="blog-header">
+            <h1 class="blog-title">
+              <%= blog.title %>
+            </h1>
+          </header>
+
+          <!-- Cover Image -->
+          <% if (blog.coverImageURL) { %>
+            <figure class="blog-cover">
+              <img src="<%= blog.coverImageURL %>" alt="<%= blog.title %>" />
+            </figure>
+            <% } %>
+
+              <!-- Blog Body -->
+              <div class="blog-body">
+                <%= blog.body %>
+              </div>
+
+              <!-- Author Card -->
+              <% if (blog.createdBy) { %>
+                <div class="author-card">
+                  <img src="<%= blog.createdBy.profileImageURL || '/download.png' %>"
+                    alt="<%= blog.createdBy.fullName %>" class="author-avatar" />
+                  <div class="author-info">
+                    <h4>
+                      <%= blog.createdBy.fullName %>
+                    </h4>
+                    <p>Published on <%= new Date(blog.createdAt).toLocaleDateString('en-US', { weekday: 'long' ,
+                        year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                    </p>
+                  </div>
+                </div>
+                <% } %>
+
+                  <!-- Comments Section -->
+                  <section class="comments-section">
+                    <h3 class="comments-title">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                          d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z">
+                        </path>
+                      </svg>
+                      Comments
+                      <span class="comments-count">
+                        <%= comments.length %>
+                      </span>
+                    </h3>
+
+                    <!-- Comment Form -->
+                    <% if (locals.user) { %>
+                      <form action="/blog/comment/<%= blog._id %>" method="post" class="comment-form">
+                        <div class="user-avatar" style="flex-shrink: 0;">
+                          <% if (user.profileImageURL && !user.profileImageURL.includes('download.png')) { %>
+                            <img src="<%= user.profileImageURL %>" alt="<%= user.fullName %>"
+                              style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                            <% } else { %>
+                              <%= user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U' %>
+                                <% } %>
+                        </div>
+                        <div class="comment-input-wrapper">
+                          <input type="text" name="content" class="comment-input"
+                            placeholder="Write a thoughtful comment..." required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+                          </svg>
+                          Send
+                        </button>
+                      </form>
+                      <% } else { %>
+                        <div class="empty-state" style="padding: var(--space-8);">
+                          <p class="empty-state-text" style="margin-bottom: var(--space-4);">Sign in to join the
+                            conversation</p>
+                          <a href="/user/signin" class="btn btn-primary">Sign In</a>
+                        </div>
+                        <% } %>
+
+                          <!-- Comments List -->
+                          <% if (comments && comments.length> 0) { %>
+                            <div class="comments-list">
+                              <% comments.forEach((comment, index)=> { %>
+                                <div class="comment-item stagger-<%= (index % 8) + 1 %>">
+                                  <img
+                                    src="<%= (comment.createdBy?.profileImageURL && !comment.createdBy.profileImageURL.includes('download.png')) ? comment.createdBy.profileImageURL : '/download.png' %>"
+                                    alt="<%= comment.createdBy?.fullName || 'Anonymous' %>" class="comment-avatar" />
+                                  <div class="comment-content">
+                                    <h5>
+                                      <%= comment.createdBy?.fullName || 'Anonymous' %>
+                                    </h5>
+                                    <p>
+                                      <%= comment.content %>
+                                    </p>
+                                  </div>
+                                </div>
+                                <% }) %>
+                            </div>
+                            <% } else { %>
+                              <div class="empty-state" style="padding: var(--space-8);">
+                                <svg class="empty-state-icon"
+                                  style="width: 48px; height: 48px; margin-bottom: var(--space-4);" viewBox="0 0 24 24"
+                                  fill="none" stroke="currentColor" stroke-width="1.5">
+                                  <path
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                                  </path>
+                                </svg>
+                                <p class="empty-state-text">No comments yet. Be the first to share your thoughts!</p>
+                              </div>
+                              <% } %>
+                  </section>
+
+                  <!-- Back to Home -->
+                  <div style="margin-top: var(--space-10); text-align: center;">
+                    <a href="/" class="btn btn-secondary">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                      </svg>
+                      Back to Home
+                    </a>
+                  </div>
+        </article>
+      </main>
+  </div>
+
+  <%- include("./partials/scripts") %>
+</body>
+
+</html>
